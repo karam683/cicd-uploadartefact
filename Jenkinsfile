@@ -133,7 +133,7 @@ pipeline {
             println("Deployment successful triggered. Checking status.");
 			      //performing the loop until we get a final deployment status.
             while (counter < env.DeploymentCheckRetryCounter.toInteger() & continueLoop == true) {
-              Thread.sleep(3000);
+              Thread.sleep(6000);
               counter = counter + 1;
               def statusResp = httpRequest acceptType: 'APPLICATION_JSON',
                 customHeaders: [
@@ -144,7 +144,14 @@ pipeline {
 		validResponseCodes: '200,201,202,404',
                 timeout: 30,
                 url: 'https://' + env.CPIHost + '/api/v1/IntegrationRuntimeArtifacts(\'' + env.IntegrationFlowID + '\')';
-              def jsonObj = readJSON text: statusResp.content;
+           
+		            if (statusResp.status == 404) {
+            //Upload integration flow via POST
+			      println("Flow runtime status not available yet");
+            
+          }
+		else{
+			     def jsonObj = readJSON text: statusResp.content;
               deploymentStatus = jsonObj.d.Status;
 
               println("Deployment status: " + deploymentStatus);
@@ -172,6 +179,9 @@ pipeline {
               } else {
                 println("The integration flow is not yet started. Will wait 3s and then check again.")
               }
+		}
+		   
+	
             }
             if (!deploymentStatus.equalsIgnoreCase("Started")) {
               error("No final deployment status could be reached. Kindly check the tenant for any issue.");
