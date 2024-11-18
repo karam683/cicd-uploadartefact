@@ -141,6 +141,7 @@ pipeline {
                 ],
                 httpMode: 'GET',
                 responseHandle: 'LEAVE_OPEN',
+		validResponseCodes: '200,201,202,404',
                 timeout: 30,
                 url: 'https://' + env.CPIHost + '/api/v1/IntegrationRuntimeArtifacts(\'' + env.IntegrationFlowID + '\')';
               def jsonObj = readJSON text: statusResp.content;
@@ -155,6 +156,7 @@ pipeline {
                   ],
                   httpMode: 'GET',
                   responseHandle: 'LEAVE_OPEN',
+		  validResponseCodes: '200,201,202,404',
                   timeout: 30,
                   url: 'https://' + env.CPIHost + '/api/v1/IntegrationRuntimeArtifacts(\'' + env.IntegrationFlowID + '\')' + '/ErrorInformation/$value';
                 def jsonErrObj = readJSON text: deploymentErrorResp.content
